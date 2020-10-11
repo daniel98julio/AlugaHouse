@@ -16,4 +16,16 @@ export class ResidenceTypeService {
     getAllResidenceTypes(): Observable<ResidenceType[]>{
         return this.http.get<ResidenceType[]>(this.baseURL)
     }
+    
+    postResidenceType(residenceType: ResidenceType) {
+        return this.http.post(this.baseURL, residenceType);   
+    }
+    
+    putResidenceType(residenceType: ResidenceType){
+        return this.http.put(`${this.baseURL}/${residenceType.residenceTypeId}`, residenceType);
+    }
+    
+    deleteResidenceType(residenceTypeId: number){
+        return this.http.delete(`${this.baseURL}/${residenceTypeId}`)
+    }
 }

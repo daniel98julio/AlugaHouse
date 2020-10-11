@@ -9,7 +9,7 @@
       </div>
     </div>
     <div>
-      <button class="btn btn-success mt-2">
+      <button class="btn btn-success mt-2" (click)="newResidenceType(residenceTypeTemplate)">
         <i class="fa fa-plus-circle"></i>&nbsp;
         Adicionar Tipo de Residência
       </button>
@@ -30,24 +30,85 @@
         <td>
           <div class="btn-group">
             <button class="btn btn-sm btn-primary" 
-            tooltip="Editar">
+            tooltip="Editar" (click)="editResidenceType(residence, residenceTypeTemplate)">
             <i class="fa fa-edit"></i>
           </button>
-          <button class="btn btn-sm btn-danger" tooltip="Excluir"> 
+          <button class="btn btn-sm btn-danger" tooltip="Excluir" (click)="deleteResidenceType(residence, confirmDlt)"> 
             <i class="fa fa-eraser"></i>
           </button>
         </div>
-      </td>
-    </tr>
-  </tbody>
-  <tfoot *ngIf="!residenceTypes">
-    <tr >
-      <td colspan="11" class="text-center">
-        <h4>
-          Nenhuma Residência Encontrada
+        </td>
+      </tr>
+    </tbody>
+    <tfoot *ngIf="!residenceTypes">
+      <tr >
+        <td colspan="11" class="text-center">
+          <h4>
+            Nenhuma Residência Encontrada
+          </h4>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!--Modal template picked up at the following link: https://valor-software.com/ngx-bootstrap/#/modals -->
+<div bsModal #residenceTypeTemplate="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-sizes-name1" class="modal-title pull-left">Tipo de Residência</h4>
+        <button type="button" class="close pull-right" (click)="residenceTypeTemplate.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="registerForm">
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Tipo de Residencia</label>
+              <input type="text" class="form-control"
+              [ngClass]="{'is-invalid': registerForm.get('residenceTypeName').errors && registerForm.get('residenceTypeName').touched}"
+              formControlName ="residenceTypeName">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer d-flex">
+        <button class="btn btn-secondary" (click)="residenceTypeTemplate.hide()">
+          Fechar
+        </button>
+        <button class="btn btn-primary ml-auto" [disabled]="!registerForm.valid" (click)="saveChanges(residenceTypeTemplate)">
+          Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
+  
+<!--Modal template picked up at the following link: https://valor-software.com/ngx-bootstrap/#/modals -->
+<div bsModal #confirmDlt="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">
+          Deletando Residencia
         </h4>
-      </td>
-    </tr>
-  </tfoot>
-</table>
+        <button type="button" class="close pull-right" (click)="confirmDlt.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{bodyDeleteResidence}}</p>
+      </div>    
+      <div class="modal-footer d-flex">   
+        <button class="btn btn-outline-primary" (click)="confirmDlt.hide()">
+          Cancelar
+        </button>   			
+        <button class="btn btn-danger ml-auto" (click)="confirmDelete(confirmDlt)">
+          Deletar
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

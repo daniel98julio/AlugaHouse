@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { Constants } from 'src/util/Constants';
 import { ResidenceType } from '../_models/residenceType';
 import { ResidenceTypeService } from '../_services/residenceType.service';
 
@@ -12,10 +15,17 @@ export class ResidenceTypesComponent implements OnInit {
   residenceTypes: ResidenceType[];
   residenceType: ResidenceType;
 
+  registerForm: FormGroup;
+  bodyDeleteResidence = '';
+  operationType = Constants.PutOperation;
+
   _listFilter: string;
 
   constructor(
-    private residenceTypeService: ResidenceTypeService) { }
+    private residenceTypeService: ResidenceTypeService,
+    private modalService: BsModalService,
+    private fb: FormBuilder
+  ) { }
 
   get listFilter(): string{
     return this._listFilter;
@@ -26,7 +36,42 @@ export class ResidenceTypesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.validation();
     this.getResidenceTypes();
+  }
+
+  newResidenceType(add: any){
+    this.operationType = Constants.PostOperation;
+    this.openModal(add);
+  }
+  
+  editResidenceType(residenceType: ResidenceType, edt: any){
+    this.operationType = Constants.PutOperation;
+    this.openModal(edt);
+    this.residenceType = residenceType;
+    this.registerForm.patchValue(residenceType);
+  }
+  
+  deleteResidenceType(residenceType: ResidenceType, dlt: any) {
+    this.openModal(dlt);
+    this.residenceType = residenceType;
+    this.bodyDeleteResidence = `Você confirma a exclusão do tipo de Residência ${residenceType.residenceTypeName}?`;
+  }
+
+  confirmDelete(dlt: any) {
+    this.residenceTypeService.deleteResidenceType(this.residenceType.residenceTypeId).subscribe(
+      () => {
+          dlt.hide();
+          this.getResidenceTypes();
+        }, error => {
+          console.log(error);
+        }
+    );
+  }
+
+  openModal(modal: any){
+    this.registerForm.reset();
+    modal.show();
   }
 
   filterResidenceTypes(filtrarPor: string): ResidenceType[] {
@@ -36,6 +81,35 @@ export class ResidenceTypesComponent implements OnInit {
       );
     }
 
+  validation(){
+    this.registerForm = this.fb.group({
+      residenceTypeName: ['', [Validators.required]]
+    });
+  }
+
+  saveChanges(save: any){
+    if(this.registerForm.valid){
+      if(this.operationType === Constants.PostOperation){
+        this.residenceType = Object.assign({}, this.registerForm.value);
+        this.residenceTypeService.postResidenceType(this.residenceType).subscribe(
+          (newResidence: ResidenceType) => {
+            save.hide();
+            this.getResidenceTypes();
+          }
+        );
+      }else{
+        this.residenceType = Object.assign({residenceTypeId: this.residenceType.residenceTypeId}, this.registerForm.value);
+        this.residenceTypeService.putResidenceType(this.residenceType).subscribe(
+          () => {
+            save.hide();
+            this.getResidenceTypes();
+          }, error => {
+            console.log(error);
+          }
+        );
+      }
+    }
+  }
   getResidenceTypes() {
     this.residenceTypeService.getAllResidenceTypes().subscribe(
     (_residenceTypes: ResidenceType[]) => {
