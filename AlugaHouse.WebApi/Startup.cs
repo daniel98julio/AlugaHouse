@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AlugaHouse.Repository;
+using AlugaHouse.Repository.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,7 +31,18 @@ namespace AlugaHouse.WebApi
         {
             services.AddDbContext<AlugaHouseContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("AlugaHouseConnection"), builder =>
-                        builder.MigrationsAssembly("AlugaHouse.Repository")));            
+                        builder.MigrationsAssembly("AlugaHouse.Repository")));
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddScoped<IAlugaHouseRepository, AlugaHouseRepository>();
+            services.AddHttpClient("ViaCepApi", client =>
+             {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.BaseAddress = new Uri(
+                   Configuration.GetSection("ViaCep_Api:BaseURL").Value);
+             });  
             services.AddControllers();
         }
 
