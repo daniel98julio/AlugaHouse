@@ -42,7 +42,8 @@ namespace AlugaHouse.WebApi
                     new MediaTypeWithQualityHeaderValue("application/json"));
                     client.BaseAddress = new Uri(
                    Configuration.GetSection("ViaCep_Api:BaseURL").Value);
-             });  
+             });
+            services.AddCors();
             services.AddControllers();
         }
 
@@ -54,6 +55,8 @@ namespace AlugaHouse.WebApi
                 app.UseDeveloperExceptionPage();
             }
             
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
             app.UseRouting();
 
             app.UseAuthorization();
