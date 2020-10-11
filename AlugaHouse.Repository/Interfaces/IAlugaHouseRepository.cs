@@ -13,6 +13,7 @@ namespace AlugaHouse.Repository.Interfaces
 
         //ViaCep Api
          Task<SearchZipCode> GetAddressByViaCepApiAsync(string zipCode);
+         Task<Residence> GetAddressByViaCepApiAsync(Residence residence);
 
         //Residence
          Task<Residence[]> GetAllResidencesAsync();

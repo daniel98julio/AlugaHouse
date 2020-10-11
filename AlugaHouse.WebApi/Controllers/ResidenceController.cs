@@ -67,6 +67,10 @@ namespace AlugaHouse.WebApi.Controllers
         {
             try
             {
+                //Validate data integrity in ViaCep Api
+                residence = await _repo.GetAddressByViaCepApiAsync(residence);
+                if(residence.ZipCode == null) return NotFound(ApiReturnMessages.ZipCodeNotFound);
+
                 _repo.Add(residence);
 
                 if(await _repo.SaveChangesAsync()){
@@ -87,9 +91,15 @@ namespace AlugaHouse.WebApi.Controllers
             try
             {
                 residence.ResidenceId = residenceId;
+
                 var upd = await _repo.GetResidenceAsyncById(residenceId);
                 if (upd == null) return NotFound();
 
+                //Validate data integrity in ViaCep Api
+                upd = await _repo.GetAddressByViaCepApiAsync(residence);
+                if(upd.ZipCode == null) return NotFound(ApiReturnMessages.ZipCodeNotFound);
+                
+                residence = upd;
                 _repo.Update(residence);
 
                 if(await _repo.SaveChangesAsync()){

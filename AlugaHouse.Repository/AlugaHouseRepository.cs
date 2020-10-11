@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AlugaHouse.Domain;
 using AlugaHouse.Repository.Interfaces;
@@ -41,17 +42,26 @@ namespace AlugaHouse.Repository
             return (await _context.SaveChangesAsync()) > 0; 
         }
 
-        //ViaCep Api
-        public async Task<SearchZipCode> GetAddressByViaCepApiAsync(string zipCode)
+        //Deserialize for ViaCep Api consults
+        private async Task<dynamic> DeserializeViaCepReturn(string zipCode)
         {
-            var response = await _client.GetAsync($"/ws/{zipCode}/json");
+            int zip = int.Parse(Regex.Replace(zipCode, @"[^\d]", ""));
+
+            var response = await _client.GetAsync($"/ws/{zip}/json");
             response.EnsureSuccessStatusCode();
             string contents =
                 response.Content.ReadAsStringAsync().Result;
             dynamic results =
                 JsonConvert.DeserializeObject(contents);
+            return results;
+        }
 
-            SearchZipCode search = new SearchZipCode();                
+        //ViaCep Api
+        public async Task<SearchZipCode> GetAddressByViaCepApiAsync(string zipCode)
+        {
+            dynamic results = await DeserializeViaCepReturn(zipCode);
+
+            SearchZipCode search = new SearchZipCode();
             search.ZipCode = results.cep;
             search.StreetAddress = results.logradouro;
             search.Complement = results.complemento;
@@ -60,6 +70,20 @@ namespace AlugaHouse.Repository
             search.State = results.uf;
 
             return search;
+        }
+
+        public async Task<Residence> GetAddressByViaCepApiAsync(Residence residence)
+        {
+            dynamic results = await DeserializeViaCepReturn(residence.ZipCode);
+              
+            residence.ZipCode = results.cep;
+            residence.StreetAddress = results.logradouro;
+            residence.Complement = results.complemento;
+            residence.Neighborhood = results.bairro;
+            residence.City = results.localidade;
+            residence.State = results.uf;
+
+            return residence;
         }
 
         //Residence
