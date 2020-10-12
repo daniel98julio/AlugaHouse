@@ -1,0 +1,77 @@
+<div class="container col-lg-11">
+  <div class="d-flex">
+    <div class="form-inline mt-2 mr-auto">
+      <div class="form-group mb-2">
+        <input type="text" 
+        class="form-control mr-2" 
+        placeholder="Buscar"
+        [(ngModel)]="listFilter">
+      </div>
+    </div>
+    <div>
+      <button class="btn btn-success mt-2">
+        <i class="fa fa-plus-circle"></i>&nbsp;
+        Adicionar Imovel
+      </button>
+    </div>
+  </div>
+  <table class="table table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>#</th>
+        <th>Rua</th>
+        <th>Número</th>
+        <th>Complemento</th>
+        <th>Bairro</th>
+        <th>Tipo</th>
+        <th>CEP</th>
+        <th>Cidade</th>
+        <th>Estado</th>
+        <th>Alugado</th>
+        <th>Opções</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="residences && residences.length">
+      <tr *ngFor="let residence of filteredResidences">
+        <td>{{residence.residenceId}}</td>
+        <td>{{residence.streetAddress}}</td>
+        <td>{{residence.addressNumber}}</td>
+        <td>{{residence.complement}}</td>
+        <td>{{residence.neighborhood}}</td>
+        <td>
+          <div *ngFor="let residenceType of residenceTypes">
+            <td *ngIf="residence.residenceTypeId == residenceType.residenceTypeId">
+              {{residenceType.residenceTypeName}}
+            </td>
+          </div>
+          </td>
+        <td>{{residence.zipCode}}</td>
+        <td>{{residence.city}}</td>
+        <td>{{residence.state}}</td>
+        <td>
+          <input *ngIf="residence.rented == true" type="checkbox" class="form-control" checked disabled>
+          <input *ngIf="residence.rented == false" type="checkbox" class="form-control" disabled>
+        </td>
+        <td>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-primary" tooltip="Editar">
+            <i class="fa fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-danger" tooltip="Excluir"> 
+            <i class="fa fa-eraser"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot *ngIf="!residences">
+    <tr >
+      <td colspan="11" class="text-center">
+        <h4>
+          Nenhuma Residência Encontrada
+        </h4>
+      </td>
+    </tr>
+  </tfoot>
+  </table>
+</div>

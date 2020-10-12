@@ -6,14 +6,19 @@ import { ModalModule} from 'ngx-bootstrap/modal';
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { ResidenceService } from './_services/Residence.service';
+import { ResidenceTypeService } from './_services/residenceType.service';
+
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { ResidencesComponent } from './residences/residences.component';
 import { ResidenceTypesComponent } from './residenceTypes/residenceTypes.component';
 
 @NgModule({
-  declarations: [		
+  declarations: [				
     AppComponent,
       NavbarComponent,
+      ResidencesComponent,
       ResidenceTypesComponent
    ],
   imports: [
@@ -25,7 +30,10 @@ import { ResidenceTypesComponent } from './residenceTypes/residenceTypes.compone
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    ResidenceService,
+    ResidenceTypeService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
