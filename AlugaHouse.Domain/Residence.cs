@@ -26,8 +26,7 @@ namespace AlugaHouse.Domain
         [StringLength(2)]
         public string State { get; set; }
         public bool Rented { get; set; }
-        [Required]
-        [ForeignKey("ResidenceTypeId")]
-        public int ResidenceTypeId { get; set; }
+        public int ResidenceTypeId {get; set;}
+        public virtual ResidenceType ResidenceType { get; set; }
     }
 }

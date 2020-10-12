@@ -3,14 +3,16 @@ using AlugaHouse.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AlugaHouse.Repository.Migrations
 {
     [DbContext(typeof(AlugaHouseContext))]
-    partial class AlugaHouseContextModelSnapshot : ModelSnapshot
+    [Migration("20201012212908_adjustFk")]
+    partial class adjustFk
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
