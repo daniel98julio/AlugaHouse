@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { zip } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 import { Constants } from 'src/util/Constants';
 import { Residence } from '../_models/Residence';
 import { ResidenceType } from '../_models/ResidenceType';
@@ -34,7 +34,8 @@ export class ResidencesComponent implements OnInit {
     private residenceService: ResidenceService,
     private residenceTypeService: ResidenceTypeService,
     private modalService: BsModalService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private toastr: ToastrService) {
   }
 
   get listFilter(): string{
@@ -74,8 +75,9 @@ export class ResidencesComponent implements OnInit {
       () => {
           dlt.hide();
           this.getResidences();
+          this.toastr.success(Constants.deleteSuccess);
         }, error => {
-          console.log(error);
+          this.toastr.error(Constants.operationError);
         }
     );
   }
@@ -134,7 +136,10 @@ export class ResidencesComponent implements OnInit {
           (newResidence: Residence) => {
             save.hide();
             this.getResidences();
-          }
+            this.toastr.success(Constants.saveSuccess);
+          }, error => {
+            this.toastr.error(Constants.operationError);
+            }
           );
         }else{
           this.residence = Object.assign({residenceId: this.residence.residenceId}, this.registerForm.value);
@@ -143,8 +148,9 @@ export class ResidencesComponent implements OnInit {
             () => {
               save.hide();
               this.getResidences();
+              this.toastr.success(Constants.saveSuccess);
             }, error => {
-              console.log(error);
+              this.toastr.error(Constants.operationError);
               }
             );
         }

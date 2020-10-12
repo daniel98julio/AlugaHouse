@@ -7,6 +7,8 @@ export class Constants {
     //Constants Strings
     static readonly PutOperation = 'put';
     static readonly PostOperation = 'post';
-
     static readonly zipCodeCorrect = /^[0-9]{8}$/;
+    static readonly saveSuccess = 'Salvo com Sucesso.';
+    static readonly deleteSuccess = 'Deletado com Sucesso.';
+    static readonly operationError = 'Ops... Ocorreu um erro.';
 }
