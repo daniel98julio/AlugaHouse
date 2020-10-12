@@ -2,7 +2,7 @@ export interface Residence {
     residenceId: number; 
     zipCode: string; 
     streetAddress: string; 
-    addressNumber: number; 
+    numberAddress: number; 
     complement: string; 
     neighborhood: string; 
     city: string; 

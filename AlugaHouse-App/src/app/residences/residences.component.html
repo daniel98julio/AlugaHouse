@@ -9,7 +9,7 @@
       </div>
     </div>
     <div>
-      <button class="btn btn-success mt-2">
+      <button class="btn btn-success mt-2" (click)="newResidence(residenceTemplate)">
         <i class="fa fa-plus-circle"></i>&nbsp;
         Adicionar Imovel
       </button>
@@ -35,7 +35,7 @@
       <tr *ngFor="let residence of filteredResidences">
         <td>{{residence.residenceId}}</td>
         <td>{{residence.streetAddress}}</td>
-        <td>{{residence.addressNumber}}</td>
+        <td>{{residence.numberAddress}}</td>
         <td>{{residence.complement}}</td>
         <td>{{residence.neighborhood}}</td>
         <td>
@@ -54,10 +54,11 @@
         </td>
         <td>
           <div class="btn-group">
-            <button class="btn btn-sm btn-primary" tooltip="Editar">
+            <button class="btn btn-sm btn-primary" 
+            tooltip="Editar" (click)="editResidence(residence, residenceTemplate)">
             <i class="fa fa-edit"></i>
           </button>
-          <button class="btn btn-sm btn-danger" tooltip="Excluir"> 
+          <button class="btn btn-sm btn-danger" tooltip="Excluir" (click)="deleteResidence(residence, confirmDlt)"> 
             <i class="fa fa-eraser"></i>
           </button>
         </div>
@@ -74,4 +75,108 @@
     </tr>
   </tfoot>
   </table>
+</div>
+
+<div bsModal #residenceTemplate="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-sizes-name1" class="modal-title pull-left">Residência</h4>
+        <button type="button" class="close pull-right" (click)="residenceTemplate.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="registerForm">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>CEP</label>
+              <input type="text" class="form-control"
+              [ngClass]="{'is-invalid': registerForm.get('zipCode').errors && registerForm.get('zipCode').touched}"
+              formControlName ="zipCode"
+              (blur)="validateZipCode(registerForm.get('zipCode').value)">
+            </div>
+            <div class="form-group col-md-6">
+              <label>Tipo de Residencia</label>
+              <select type="number" class="form-control" 
+              [ngClass]="{'is-invalid': registerForm.get('residenceTypeId').errors && registerForm.get('residenceTypeId').touched}"
+              formControlName="residenceTypeId">
+                <option *ngFor="let residenceType of residenceTypes" value= {{residenceType.residenceTypeId}}>
+                  {{residenceType.residenceTypeName}}
+                </option>
+              </select>
+            </div>
+            <div class="form-group col-md-2">
+              <label>Alugado?</label>
+              <input type="checkbox" class="form-control" formControlName="rented">
+            </div>
+            <div class="form-group col-md-10">
+              <label>Rua</label>
+              <input type="text" readonly="true" class="form-control" formControlName="streetAddress">
+            </div>
+            <div class="form-group col-md-2">
+              <label>Número</label>
+              <input type="number" class="form-control" 
+              [ngClass]="{'is-invalid': registerForm.get('numberAddress').errors && registerForm.get('numberAddress').touched}"
+              formControlName="numberAddress">
+            </div>
+          </div>  
+          <div class="form-row">
+            <div class="form-group col-md-5">
+              <label>Complemento</label>
+              <input type="text" readonly="true" class="form-control" formControlName="complement">
+            </div>
+            <div class="form-group col-md-7">
+              <label>Bairro</label>
+              <input type="text" readonly="true" class="form-control" formControlName="neighborhood">
+            </div>
+          </div>  
+          <div class="form-row">
+            <div class="form-group col-md-10">
+              <label>Cidade</label>
+              <input type="text" readonly="true" class="form-control" formControlName="city">
+            </div>
+            <div class="form-group col-md-2">
+              <label>Estado</label>
+              <input type="text" readonly="true" class="form-control" formControlName="state">
+            </div>
+          </div> 
+        </form>
+      </div>
+      <div class="modal-footer d-flex">
+        <button class="btn btn-secondary" (click)="residenceTemplate.hide()">
+          Fechar
+        </button>
+        <button class="btn btn-primary ml-auto" [disabled]="!registerForm.valid" (click)="saveChanges(residenceTemplate)">
+          Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #confirmDlt="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">
+          Deletando Residencia
+        </h4>
+        <button type="button" class="close pull-right" (click)="confirmDlt.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{bodyDeleteResidence}}</p>
+      </div>    
+      <div class="modal-footer d-flex">   
+          <button class="btn btn-outline-primary" (click)="confirmDlt.hide()">
+            Cancelar
+          </button>   			
+          <button class="btn btn-danger ml-auto" (click)="confirmDelete(confirmDlt)">
+            Deletar
+          </button>
+      </div>
+    </div>
+  </div>
 </div>
