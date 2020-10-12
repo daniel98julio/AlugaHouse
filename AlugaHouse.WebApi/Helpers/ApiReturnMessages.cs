@@ -1,4 +1,4 @@
-namespace AlugaHouse.Repository.Constants
+namespace AlugaHouse.WebApi.Helpers
 {
     public class ApiReturnMessages
     {

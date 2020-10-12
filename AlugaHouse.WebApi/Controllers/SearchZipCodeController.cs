@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using AlugaHouse.Repository.Constants;
 using AlugaHouse.Repository.Interfaces;
+using AlugaHouse.WebApi.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

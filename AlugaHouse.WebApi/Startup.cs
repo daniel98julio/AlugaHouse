@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AlugaHouse.Repository;
 using AlugaHouse.Repository.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -43,6 +44,7 @@ namespace AlugaHouse.WebApi
                     client.BaseAddress = new Uri(
                    Configuration.GetSection("ViaCep_Api:BaseURL").Value);
              });
+            services.AddAutoMapper();
             services.AddCors();
             services.AddControllers();
         }

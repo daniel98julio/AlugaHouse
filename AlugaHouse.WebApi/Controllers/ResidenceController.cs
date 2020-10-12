@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using AlugaHouse.Domain;
-using AlugaHouse.Repository.Constants;
 using AlugaHouse.Repository.Interfaces;
+using AlugaHouse.WebApi.DTOs;
+using AlugaHouse.WebApi.Helpers;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +14,11 @@ namespace AlugaHouse.WebApi.Controllers
     public class ResidenceController : ControllerBase
     {
         private readonly IAlugaHouseRepository _repo;
+        private readonly IMapper _mapper;
 
-        public ResidenceController(IAlugaHouseRepository repo)
+        public ResidenceController(IAlugaHouseRepository repo, IMapper mapper)
         {
+            _mapper = mapper;
             _repo = repo;
         }
 
@@ -23,36 +27,7 @@ namespace AlugaHouse.WebApi.Controllers
         {
             try
             {
-                var results = await _repo.GetAllResidencesAsync();
-
-                return Ok(results);
-            }
-            catch (System.Exception)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed);
-            }
-        }
-
-        [HttpGet("{residenceId}")]
-        public async Task<IActionResult> Get(int residenceId)
-        {
-            try
-            {
-                var results = await _repo.GetResidenceAsyncById(residenceId);
-                return Ok(results);
-            }
-            catch (System.Exception)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed);
-            }
-        }
-
-        [HttpGet("getByZipCode/{zipCode}")]
-        public async Task<IActionResult> Get(string zipCode)
-        {
-            try
-            {
-                var results = await _repo.GetResidenceAsyncByZipCode(zipCode);
+                var results = _mapper.Map<ResidenceDto[]>(await _repo.GetAllResidencesAsync());
 
                 return Ok(results);
             }
@@ -63,10 +38,12 @@ namespace AlugaHouse.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Residence residence)
+        public async Task<IActionResult> Post(ResidenceDto residenceDto)
         {
             try
             {
+                var residence = _mapper.Map<Residence>(residenceDto);
+
                 //Validate data integrity in ViaCep Api
                 residence = await _repo.GetAddressByViaCepApiAsync(residence);
                 if(residence.ZipCode == null) return NotFound(ApiReturnMessages.ZipCodeNotFound);
@@ -74,7 +51,7 @@ namespace AlugaHouse.WebApi.Controllers
                 _repo.Add(residence);
 
                 if(await _repo.SaveChangesAsync()){
-                    return Created($"/api/Residence/{residence.ResidenceId}", residence);
+                    return Created($"/api/Residence/{residence.ResidenceId}", residenceDto);
                 }
             }
             catch (System.Exception)
@@ -86,7 +63,7 @@ namespace AlugaHouse.WebApi.Controllers
         }
 
         [HttpPut("{residenceId}")]
-        public async Task<IActionResult> Put(int residenceId, Residence residence)
+        public async Task<IActionResult> Put(int residenceId, ResidenceDto residence)
         {
             try
             {
@@ -95,12 +72,13 @@ namespace AlugaHouse.WebApi.Controllers
                 var upd = await _repo.GetResidenceAsyncById(residenceId);
                 if (upd == null) return NotFound();
 
+                _mapper.Map(residence, upd);
+
                 //Validate data integrity in ViaCep Api
-                upd = await _repo.GetAddressByViaCepApiAsync(residence);
+                upd = await _repo.GetAddressByViaCepApiAsync(upd);
                 if(upd.ZipCode == null) return NotFound(ApiReturnMessages.ZipCodeNotFound);
-                
-                residence = upd;
-                _repo.Update(residence);
+
+                _repo.Update(upd);
 
                 if(await _repo.SaveChangesAsync()){
                     return Created($"/api/Residence/{residence.ResidenceId}", residence);

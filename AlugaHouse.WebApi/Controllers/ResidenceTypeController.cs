@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using AlugaHouse.Domain;
-using AlugaHouse.Repository.Constants;
 using AlugaHouse.Repository.Interfaces;
+using AlugaHouse.WebApi.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,21 +24,6 @@ namespace AlugaHouse.WebApi.Controllers
             try
             {
                 var results = await _repo.GetAllResidenceTypesAsync();
-
-                return Ok(results);
-            }
-            catch (System.Exception)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, ApiReturnMessages.DbFailed);
-            }
-        }
-
-        [HttpGet("{residenceTypeId}")]
-        public async Task<IActionResult> Get(int residenceTypeId)
-        {
-            try
-            {
-                var results = await _repo.GetResidenceTypeAsyncById(residenceTypeId);
 
                 return Ok(results);
             }
