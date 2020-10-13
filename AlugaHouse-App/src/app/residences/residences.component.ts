@@ -104,8 +104,7 @@ export class ResidencesComponent implements OnInit {
     this.registerForm = this.fb.group({
       zipCode: ['', [
         Validators.required, 
-        Validators.minLength(9), 
-        Validators.maxLength(9)
+        Validators.minLength(8)
       ]],
       streetAddress: [''],
       numberAddress: ['', [

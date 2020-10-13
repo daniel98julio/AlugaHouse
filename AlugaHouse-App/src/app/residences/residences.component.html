@@ -4,7 +4,7 @@
       <div class="form-group mb-2">
         <input type="text" 
         class="form-control mr-2" 
-        placeholder="Buscar"
+        placeholder="Buscar por Cep"
         [(ngModel)]="listFilter">
       </div>
     </div>
@@ -81,7 +81,7 @@
           <div class="form-row">
             <div class="form-group col-md-3">
               <label>CEP</label>
-              <input type="text" class="form-control" [ngClass]="{'is-invalid': registerForm.get('zipCode').errors && registerForm.get('zipCode').touched}" formControlName ="zipCode" (blur)="validateZipCode(registerForm.get('zipCode').value)">
+              <input type="text" class="form-control" mask="00000-000" [ngClass]="{'is-invalid': registerForm.get('zipCode').errors && registerForm.get('zipCode').touched}" formControlName ="zipCode" (blur)="validateZipCode(registerForm.get('zipCode').value)">
               <div *ngIf="registerForm.get('zipCode').hasError('required') && registerForm.get('zipCode').touched" class="invalid-feedback">
                 Insira um Cep Válido.
               </div>

@@ -14,7 +14,8 @@ import { ResidenceTypeService } from './_services/residenceType.service';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ResidencesComponent } from './residences/residences.component';
-import { ResidenceTypesComponent } from './residenceTypes/residenceTypes.component';
+import { ResidenceTypesComponent } from './residenceTypes/residenceTypes.component'; 
+import { NgxMaskModule, IConfig } from 'ngx-mask';
 
 @NgModule({
   declarations: [				
@@ -29,8 +30,8 @@ import { ResidenceTypesComponent } from './residenceTypes/residenceTypes.compone
     ModalModule.forRoot(),
     TooltipModule.forRoot(),
     BrowserAnimationsModule,
-    ToastrModule.forRoot( {
-      preventDuplicates: true}),
+    ToastrModule.forRoot({ preventDuplicates: true}),
+    NgxMaskModule.forRoot(),  
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule
