@@ -31,20 +31,18 @@
         <th>Opções</th>
       </tr>
     </thead>
-    <tbody *ngIf="residences && residences.length">
-      <tr *ngFor="let residence of filteredResidences">
+    <tbody *ngIf="residenceService.residences && residenceService.residences.length">
+      <tr *ngFor="let residence of residenceService.filteredResidences">
         <td>{{residence.residenceId}}</td>
         <td>{{residence.streetAddress}}</td>
         <td>{{residence.numberAddress}}</td>
         <td>{{residence.complement}}</td>
         <td>{{residence.neighborhood}}</td>
-        <td>
-          <div *ngFor="let residenceType of residenceTypes">
-            <td *ngIf="residence.residenceTypeId == residenceType.residenceTypeId">
-              {{residenceType.residenceTypeName}}
-            </td>
-          </div>
+        <div *ngFor="let residenceType of residenceTypeService.filteredResidenceTypes">
+          <td *ngIf="residence.residenceTypeId == residenceType.residenceTypeId">
+            {{residenceType.residenceTypeName}}
           </td>
+        </div>
         <td>{{residence.zipCode}}</td>
         <td>{{residence.city}}</td>
         <td>{{residence.state}}</td>
@@ -65,18 +63,10 @@
       </td>
     </tr>
   </tbody>
-  <tfoot *ngIf="!residences">
-    <tr >
-      <td colspan="11" class="text-center">
-        <h4>
-          Nenhuma Residência Encontrada
-        </h4>
-      </td>
-    </tr>
-  </tfoot>
   </table>
 </div>
 
+<!--Modal template picked up at the following link: https://valor-software.com/ngx-bootstrap/#/modals -->
 <div bsModal #residenceTemplate="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
   <div class="modal-dialog modal-md">
     <div class="modal-content">
@@ -89,36 +79,49 @@
       <div class="modal-body">
         <form [formGroup]="registerForm">
           <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
               <label>CEP</label>
-              <input type="text" class="form-control"
-              [ngClass]="{'is-invalid': registerForm.get('zipCode').errors && registerForm.get('zipCode').touched}"
-              formControlName ="zipCode"
-              (blur)="validateZipCode(registerForm.get('zipCode').value)">
+              <input type="text" class="form-control" [ngClass]="{'is-invalid': registerForm.get('zipCode').errors && registerForm.get('zipCode').touched}" formControlName ="zipCode" (blur)="validateZipCode(registerForm.get('zipCode').value)">
+              <div *ngIf="registerForm.get('zipCode').hasError('required') && registerForm.get('zipCode').touched" class="invalid-feedback">
+                Insira um Cep Válido.
+              </div>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-5">
               <label>Tipo de Residencia</label>
-              <select type="number" class="form-control" 
-              [ngClass]="{'is-invalid': registerForm.get('residenceTypeId').errors && registerForm.get('residenceTypeId').touched}"
-              formControlName="residenceTypeId">
-                <option *ngFor="let residenceType of residenceTypes" value= {{residenceType.residenceTypeId}}>
+              <select type="number" class="form-control" [ngClass]="{'is-invalid': registerForm.get('residenceTypeId').errors && registerForm.get('residenceTypeId').touched}" formControlName="residenceTypeId">
+                <option *ngFor="let residenceType of residenceTypeService.filteredResidenceTypes" value= {{residenceType.residenceTypeId}}>
                   {{residenceType.residenceTypeName}}
                 </option>
+              </select>            
+              <div *ngIf="registerForm.get('residenceTypeId').hasError('required') && registerForm.get('residenceTypeId').touched" class="invalid-feedback">
+                Escolha ou Cadastre um Tipo de Residência.
+              </div>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label>Status</label>
+              <select type="number" class="form-control" [ngClass]="{'is-invalid': registerForm.get('rented').errors && registerForm.get('rented').touched}" formControlName="rented">
+                <option value="true">
+                  Alugado
+                </option>                
+                <option value="false">
+                  Disponível
+                </option>
               </select>
+              <div *ngIf="registerForm.get('rented').hasError('required') && registerForm.get('rented').touched" class="invalid-feedback">
+                Defina o Status da Residência.
+              </div>
             </div>
-            <div class="form-group col-md-2">
-              <label>Alugado?</label>
-              <input type="checkbox" class="form-control" formControlName="rented">
-            </div>
-            <div class="form-group col-md-10">
+            <div class="form-group col-md-9">
               <label>Rua</label>
               <input type="text" readonly="true" class="form-control" formControlName="streetAddress">
             </div>
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-3">
               <label>Número</label>
-              <input type="number" class="form-control" 
-              [ngClass]="{'is-invalid': registerForm.get('numberAddress').errors && registerForm.get('numberAddress').touched}"
-              formControlName="numberAddress">
+              <input type="number" class="form-control" [ngClass]="{'is-invalid': registerForm.get('numberAddress').errors && registerForm.get('numberAddress').touched}" formControlName="numberAddress">
+              <div *ngIf="registerForm.get('numberAddress').hasError('required') && registerForm.get('numberAddress').touched" class="invalid-feedback">
+                Insira um Número Válido.
+              </div>
             </div>
           </div>  
           <div class="form-row">
@@ -155,6 +158,7 @@
   </div>
 </div>
 
+<!--Modal template picked up at the following link: https://valor-software.com/ngx-bootstrap/#/modals -->
 <div bsModal #confirmDlt="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">

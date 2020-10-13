@@ -4,7 +4,6 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ToastrService } from 'ngx-toastr';
 import { Constants } from 'src/util/Constants';
 import { Residence } from '../_models/Residence';
-import { ResidenceType } from '../_models/ResidenceType';
 import { SearchZipCode } from '../_models/SearchZipCode';
 import { ResidenceService } from '../_services/Residence.service';
 import { ResidenceTypeService } from '../_services/residenceType.service';
@@ -15,12 +14,7 @@ import { ResidenceTypeService } from '../_services/residenceType.service';
   styleUrls: ['./residences.component.css']
 })
 export class ResidencesComponent implements OnInit {
-  filteredResidences: Residence[];
-  residences: Residence[];
   residence: Residence;
-
-  filteredResidenceTypes: ResidenceType[];//vai usar
-  residenceTypes: ResidenceType[];//vai usar
 
   searchZipCode: SearchZipCode;
 
@@ -31,8 +25,8 @@ export class ResidencesComponent implements OnInit {
   _listFilter: string;
 
   constructor(
-    private residenceService: ResidenceService,
-    private residenceTypeService: ResidenceTypeService,
+    public residenceService: ResidenceService,
+    public residenceTypeService: ResidenceTypeService,
     private modalService: BsModalService,
     private fb: FormBuilder,
     private toastr: ToastrService) {
@@ -43,13 +37,13 @@ export class ResidencesComponent implements OnInit {
   }
   set listFilter(value: string){
     this._listFilter = value;
-    this.filteredResidences = this.listFilter ? this.filterResidences(this.listFilter) : this.residences;
+    this.residenceService.filteredResidences = this.listFilter ? this.filterResidences(this.listFilter) : this.residenceService.residences;
   }
 
   ngOnInit() {
     this.validation();
-    this.getResidences();
-    this.getResidenceTypes();
+    this.residenceService.getResidences();
+    this.residenceTypeService.getResidenceTypes();
   }
   
   newResidence(add: any){
@@ -74,7 +68,7 @@ export class ResidencesComponent implements OnInit {
     this.residenceService.deleteResidence(this.residence.residenceId).subscribe(
       () => {
           dlt.hide();
-          this.getResidences();
+          this.residenceService.getResidences();
           this.toastr.success(Constants.deleteSuccess);
         }, error => {
           this.toastr.error(Constants.operationError);
@@ -96,12 +90,12 @@ export class ResidencesComponent implements OnInit {
 
   openModal(modal: any){
     this.registerForm.reset();
-    this.getResidenceTypes();
+    this.residenceTypeService.getAllResidenceTypes();
     modal.show();
   }
 
   filterResidences(filtrarPor: string): Residence[] {
-    return this.residences.filter(
+    return this.residenceService.residences.filter(
       residence => residence.zipCode.indexOf(filtrarPor) !== -1
       );
     }
@@ -122,7 +116,7 @@ export class ResidencesComponent implements OnInit {
       neighborhood: [''],
       city:  [''],
       state: [''],
-      rented: [''],
+      rented: ['', Validators.required],
       residenceTypeId: ['', Validators.required]
     });
   }
@@ -135,10 +129,11 @@ export class ResidencesComponent implements OnInit {
         this.residenceService.postResidence(this.residence).subscribe(
           (newResidence: Residence) => {
             save.hide();
-            this.getResidences();
+            this.residenceService.getResidences();
             this.toastr.success(Constants.saveSuccess);
           }, error => {
             this.toastr.error(Constants.operationError);
+            console.error;
             }
           );
         }else{
@@ -147,7 +142,7 @@ export class ResidencesComponent implements OnInit {
           this.residenceService.putResidence(this.residence).subscribe(
             () => {
               save.hide();
-              this.getResidences();
+              this.residenceService.getResidences();
               this.toastr.success(Constants.saveSuccess);
             }, error => {
               this.toastr.error(Constants.operationError);
@@ -155,26 +150,6 @@ export class ResidencesComponent implements OnInit {
             );
         }
     }
-  }
-
-  getResidences() {
-    this.residenceService.getAllResidences().subscribe(
-    (_residences: Residence[]) => {
-      this.residences = _residences;
-      this.filteredResidences = this.residences;
-    }, error => {
-      console.log(error)
-    });
-  }
-
-  getResidenceTypes() {//vai usar
-    this.residenceTypeService.getAllResidenceTypes().subscribe(
-    (_residenceTypes: ResidenceType[]) => {
-      this.residenceTypes = _residenceTypes;
-      this.filteredResidenceTypes = this.residenceTypes;
-    }, error => {
-      console.log(error)
-    });
   }
 }
 

@@ -11,6 +11,9 @@ export class ResidenceService {
     baseURL = Constants.url_Residences;
     viaCepSearchURL = Constants.url_SearchZipCode
     
+    filteredResidences: Residence[];
+    residences: Residence[];
+
     constructor(private http: HttpClient) { }
 
     //Get ViaCep API
@@ -20,6 +23,17 @@ export class ResidenceService {
     
     getAllResidences(): Observable<Residence[]>{
         return this.http.get<Residence[]>(this.baseURL)
+    }
+
+    //Placed here to standardize
+    getResidences() {
+        this.getAllResidences().subscribe(
+        (_residences: Residence[]) => {
+          this.residences = _residences;
+          this.filteredResidences = this.residences;
+        }, error => {
+          console.log(error)
+        });
     }
     
     postResidence(residence: Residence) {

@@ -23,32 +23,23 @@
         <th>Opções</th>
       </tr>
     </thead>
-    <tbody *ngIf="residenceTypes && residenceTypes.length">
-      <tr *ngFor="let residence of filteredResidenceTypes">
-        <td>{{residence.residenceTypeId}}</td>
-        <td>{{residence.residenceTypeName}}</td>
+    <tbody *ngIf="residenceTypeService.residenceTypes && residenceTypeService.residenceTypes.length">
+      <tr *ngFor="let residenceType of residenceTypeService.filteredResidenceTypes">
+        <td>{{residenceType.residenceTypeId}}</td>
+        <td>{{residenceType.residenceTypeName}}</td>
         <td>
           <div class="btn-group">
             <button class="btn btn-sm btn-primary" 
-            tooltip="Editar" (click)="editResidenceType(residence, residenceTypeTemplate)">
+            tooltip="Editar" (click)="editResidenceType(residenceType, residenceTypeTemplate)">
             <i class="fa fa-edit"></i>
           </button>
-          <button class="btn btn-sm btn-danger" tooltip="Excluir" (click)="deleteResidenceType(residence, confirmDlt)"> 
+          <button class="btn btn-sm btn-danger" tooltip="Excluir" (click)="deleteResidenceType(residenceType, confirmDlt)"> 
             <i class="fa fa-eraser"></i>
           </button>
         </div>
         </td>
       </tr>
     </tbody>
-    <tfoot *ngIf="!residenceTypes">
-      <tr >
-        <td colspan="11" class="text-center">
-          <h4>
-            Nenhuma Residência Encontrada
-          </h4>
-        </td>
-      </tr>
-    </tfoot>
   </table>
 </div>
 
@@ -99,7 +90,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>{{bodyDeleteResidence}}</p>
+        <p>{{bodyDeleteResidenceType}}</p>
       </div>    
       <div class="modal-footer d-flex">   
         <button class="btn btn-outline-primary" (click)="confirmDlt.hide()">

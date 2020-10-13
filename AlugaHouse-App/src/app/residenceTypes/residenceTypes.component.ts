@@ -12,18 +12,16 @@ import { ResidenceTypeService } from '../_services/residenceType.service';
   styleUrls: ['./residenceTypes.component.css']
 })
 export class ResidenceTypesComponent implements OnInit {
-  filteredResidenceTypes: ResidenceType[];
-  residenceTypes: ResidenceType[];
   residenceType: ResidenceType;
 
   registerForm: FormGroup;
-  bodyDeleteResidence = '';
+  bodyDeleteResidenceType = '';
   operationType = Constants.PutOperation;
 
   _listFilter: string;
 
   constructor(
-    private residenceTypeService: ResidenceTypeService,
+    public residenceTypeService: ResidenceTypeService,
     private modalService: BsModalService,
     private fb: FormBuilder,
     private toastr: ToastrService) { }
@@ -33,12 +31,12 @@ export class ResidenceTypesComponent implements OnInit {
   }
   set listFilter(value: string){
     this._listFilter = value;
-    this.filteredResidenceTypes = this.listFilter ? this.filterResidenceTypes(this.listFilter) : this.residenceTypes;
+    this.residenceTypeService.filteredResidenceTypes = this.listFilter ? this.filterResidenceTypes(this.listFilter) : this.residenceTypeService.residenceTypes;
   }
 
   ngOnInit() {
     this.validation();
-    this.getResidenceTypes();
+    this.residenceTypeService.getResidenceTypes();
   }
 
   newResidenceType(add: any){
@@ -56,18 +54,18 @@ export class ResidenceTypesComponent implements OnInit {
   deleteResidenceType(residenceType: ResidenceType, dlt: any) {
     this.openModal(dlt);
     this.residenceType = residenceType;
-    this.bodyDeleteResidence = `Você confirma a exclusão do tipo de Residência ${residenceType.residenceTypeName}?`;
+    this.bodyDeleteResidenceType = `Você confirma a exclusão do tipo de Residência ${residenceType.residenceTypeName}?`;
   }
 
   confirmDelete(dlt: any) {
     this.residenceTypeService.deleteResidenceType(this.residenceType.residenceTypeId).subscribe(
       () => {
           dlt.hide();
-          this.getResidenceTypes();
+          this.residenceTypeService.getResidenceTypes();
           this.toastr.success(Constants.deleteSuccess);
         }, error => {
+          dlt.hide();
           this.toastr.error(Constants.operationError);
-          console.log(error);
         }
     );
   }
@@ -79,7 +77,7 @@ export class ResidenceTypesComponent implements OnInit {
 
   filterResidenceTypes(filtrarPor: string): ResidenceType[] {
     filtrarPor = filtrarPor.toLocaleLowerCase();
-    return this.residenceTypes.filter(
+    return this.residenceTypeService.residenceTypes.filter(
       residenceType => residenceType.residenceTypeName.toLocaleLowerCase().indexOf(filtrarPor) !== -1
       );
     }
@@ -97,11 +95,11 @@ export class ResidenceTypesComponent implements OnInit {
         this.residenceTypeService.postResidenceType(this.residenceType).subscribe(
           (newResidence: ResidenceType) => {
             save.hide();
-            this.getResidenceTypes();
+            this.residenceTypeService.getResidenceTypes();
             this.toastr.success(Constants.saveSuccess);
           }, error => {
+            save.hide();
             this.toastr.error(Constants.operationError);
-            console.log(error);
           }
         );
       }else{
@@ -109,23 +107,14 @@ export class ResidenceTypesComponent implements OnInit {
         this.residenceTypeService.putResidenceType(this.residenceType).subscribe(
           () => {
             save.hide();
-            this.getResidenceTypes();
+            this.residenceTypeService.getResidenceTypes();
             this.toastr.success(Constants.saveSuccess);
           }, error => {
+            save.hide();
             this.toastr.error(Constants.operationError);
-            console.log(error);
           }
         );
       }
     }
-  }
-  getResidenceTypes() {
-    this.residenceTypeService.getAllResidenceTypes().subscribe(
-    (_residenceTypes: ResidenceType[]) => {
-      this.residenceTypes = _residenceTypes;
-      this.filteredResidenceTypes = this.residenceTypes;
-    }, error => {
-      console.log(error)
-    });
   }
 }
